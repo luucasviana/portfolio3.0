@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Sou desenvolvedor front-end, esse é meu portfólio com projetos pessoais.">
+    <meta name="author" content="Lucas Viana" />
+    <meta name="keywords" content="sites, web, desenvolvimento, frontend, lucas viana, programador, lucasdev, front-end, website, portfólio" />
+    <meta name="copyright" content="lucas viana 2026">
+    <link rel="icon" href="img/icon-code.svg" type="image/svg+xml">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="style.css">
+    <title>Lucas Viana | Front-End Developer</title>
+</head>
+
+<body>
+    <!-- Subtle Dynamic Background Glow -->
+    <div class="bg-glow" id="bgGlow"></div>
+    <canvas id="cursorTrail"></canvas>
+
+    <div class="app-container">
+        <!-- Minimalist Left Navigation Dock -->
+        <aside class="sidebar">
+            <div class="logo">
+                <a href="#home" data-section="home" class="logo-link">LV<span>.</span></a>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#home" class="nav-item active" data-section="home">
+                    <i class="fa-solid fa-house"></i>
+                    <span class="nav-tooltip">Início</span>
+                </a>
+                <a href="#sobre" class="nav-item" data-section="sobre">
+                    <i class="fa-solid fa-user"></i>
+                    <span class="nav-tooltip">Sobre</span>
+                </a>
+                <a href="#habilidades" class="nav-item" data-section="habilidades">
+                    <i class="fa-solid fa-code"></i>
+                    <span class="nav-tooltip">Habilidades</span>
+                </a>
+                <a href="#projetos" class="nav-item" data-section="projetos">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span class="nav-tooltip">Projetos</span>
+                </a>
+                <a href="#contatos" class="nav-item" data-section="contatos">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span class="nav-tooltip">Contato</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="https://github.com/luucasviana" target="_blank" class="social-mini"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </aside>
+
+        <!-- Right Content Area -->
+        <main class="content-area">
+            
+            <!-- HOME SECTION -->
+            <section id="home" class="content-section active">
+                <div class="hero-container">
+                    <span class="hero-intro">Olá, eu sou</span>
+                    <h1 class="hero-title">Lucas Viana</h1>
+                    <h2 class="hero-subtitle">Desenvolvedor & Designer UI<span>.</span></h2>
+                    <p class="hero-description">
+                        Especializado em unir design intuitivo e desenvolvimento de alto nível para criar sistemas modernos, funcionais e totalmente focados na melhor experiência de usuário.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="doc/Curriculo - 3.5.pdf" class="btn btn-primary" download>
+                            <i class="fa-solid fa-download"></i> Download CV
+                        </a>
+                        <a href="doc/Certificado-Bubble.pdf" class="btn btn-secondary" download>
+                            <i class="fa-solid fa-award"></i> Certificado Bubble
+                        </a>
+                        <a href="#projetos" data-section="projetos" class="btn btn-secondary nav-trigger">
+                            Ver Projetos <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SOBRE SECTION -->
+            <section id="sobre" class="content-section">
+                <div class="section-header">
+                    <span class="section-tag">01 / SOBRE MIM</span>
+                    <h2 class="section-title">Minha Trajetória</h2>
+                </div>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>
+                            Sou desenvolvedor e designer UI apaixonado por transformar ideias em produtos digitais que realmente funcionam na prática. Comecei trabalhando com <strong class="highlight">Bubble</strong> e, ao longo do tempo, fui unindo cada vez mais desenvolvimento, design e estratégia de produto no mesmo processo.
+                        </p>
+                        <p>
+                            Hoje, meu foco é criar sistemas modernos, intuitivos e bem estruturados — desde plataformas <strong class="highlight">SaaS</strong> e dashboards administrativos até aplicativos completos com integrações e experiências personalizadas.
+                        </p>
+                        <p>
+                            Gosto de pensar além da interface: entender o problema, organizar a experiência do usuário e construir soluções que façam sentido tanto para quem usa quanto para quem gerencia o produto.
+                        </p>
+                    </div>
+                    
+                    <div class="experience-carousel-container">
+                        <span class="carousel-title">Empresas & Experiência</span>
+                        <div class="vertical-carousel-wrapper">
+                            <div class="vertical-carousel-track">
+                                <!-- Primeiro Set de Logos -->
+                                <div class="carousel-item-logo"><span class="logo-text">InfoEduc</span></div>
+                                <div class="carousel-item-logo"><span class="logo-text">Ecoaai</span></div>
+                                <div class="carousel-item-logo"><span class="logo-text">BubbleStudio</span></div>
+                                <div class="carousel-item-logo"><span class="logo-text">Freelance</span></div>
+                                
+                                <!-- Segundo Set Duplicado para Scroll Infinito -->
+                                <div class="carousel-item-logo"><span class="logo-text">InfoEduc</span></div>
+                                <div class="carousel-item-logo"><span class="logo-text">Ecoaai</span></div>
+                                <div class="carousel-item-logo"><span class="logo-text">BubbleStudio</span></div>
+                                <div class="carousel-item-logo"><span class="logo-text">Freelance</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HABILIDADES SECTION -->
+            <section id="habilidades" class="content-section">
+                <div class="section-header">
+                    <span class="section-tag">02 / COMPETÊNCIAS</span>
+                    <h2 class="section-title">Especialidades & Diferenciais</h2>
+                </div>
+                
+                <div class="skills-grid">
+                    <!-- Desenvolvimento -->
+                    <div class="skill-category-card" style="--card-color: #00adb5;">
+                        <div class="category-header">
+                            <div class="category-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                            <h3 class="category-title">Desenvolvimento</h3>
+                        </div>
+                        <ul class="category-skills-list">
+                            <li><i class="fa-solid fa-circle-check"></i> Bubble</li>
+                            <li><i class="fa-solid fa-circle-check"></i> APIs REST</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Estruturação de banco de dados</li>
+                        </ul>
+                    </div>
+
+                    <!-- Design -->
+                    <div class="skill-category-card" style="--card-color: #a29bfe;">
+                        <div class="category-header">
+                            <div class="category-icon"><i class="fa-solid fa-palette"></i></div>
+                            <h3 class="category-title">Design</h3>
+                        </div>
+                        <ul class="category-skills-list">
+                            <li><i class="fa-solid fa-circle-check"></i> UI Design</li>
+                            <li><i class="fa-solid fa-circle-check"></i> UX Design</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Design Systems</li>
+                        </ul>
+                    </div>
+
+                    <!-- Produto -->
+                    <div class="skill-category-card" style="--card-color: #00b894;">
+                        <div class="category-header">
+                            <div class="category-icon"><i class="fa-solid fa-cubes"></i></div>
+                            <h3 class="category-title">Produto</h3>
+                        </div>
+                        <ul class="category-skills-list">
+                            <li><i class="fa-solid fa-circle-check"></i> Organização de regras de negócio</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Construção de MVPs</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Visão de escalabilidade</li>
+                        </ul>
+                    </div>
+
+                    <!-- Diferenciais -->
+                    <div class="skill-category-card" style="--card-color: #fdcb6e;">
+                        <div class="category-header">
+                            <div class="category-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <h3 class="category-title">Diferenciais</h3>
+                        </div>
+                        <ul class="category-skills-list">
+                            <li><i class="fa-solid fa-circle-check"></i> Perfil híbrido entre dev e design</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Forte foco em experiência do usuário (UX)</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Agilidade na validação de produtos</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROJETOS SECTION -->
+            <section id="projetos" class="content-section">
+                <div class="section-header">
+                    <span class="section-tag">03 / TRABALHOS</span>
+                    <h2 class="section-title">Projetos em Destaque</h2>
+                </div>
+                
+                <div class="projects-grid">
+                    <!-- Ecoaai -->
+                    <article class="project-card">
+                        <div class="project-info">
+                            <span class="project-category">SaaS B2B / IA</span>
+                            <h3 class="project-title">Ecoaai</h3>
+                            <p class="project-desc">
+                                Copiloto criativo de automação de marketing digital focado em nichos altamente visuais. Com um motor de <em>Continuous Learning</em>, a inteligência artificial memoriza a identidade verbal e visual da marca, gerando layouts 100% dinâmicos em tempo real e integrando agendamentos e postagens automáticas direto no Instagram.
+                            </p>
+                            <div class="project-tags">
+                                <span>Inteligência Artificial</span>
+                                <span>Continuous Learning</span>
+                                <span>Marketing Automation</span>
+                                <span>SaaS B2B</span>
+                            </div>
+                            <div class="project-actions">
+                                <a href="https://ecoaai.com" target="_blank" class="project-link btn-glow">
+                                    Conhecer o SaaS <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Adote Pet -->
+                    <article class="project-card">
+                        <div class="project-info">
+                            <span class="project-category">Full-Stack / Plataforma</span>
+                            <h3 class="project-title">AdotePet</h3>
+                            <p class="project-desc">
+                                Plataforma full-stack para adoção e proteção animal criada com React, TypeScript, Vite e Supabase. O sistema conecta adotantes, ONGs, parceiros e administradores com recursos de cadastro de pets, mapas interativos de resgate, painéis administrativos e segurança integrada.
+                            </p>
+                            <div class="project-tags">
+                                <span>React</span>
+                                <span>TypeScript</span>
+                                <span>Supabase</span>
+                                <span>Vite</span>
+                                <span>Playwright</span>
+                            </div>
+                            <div class="project-actions">
+                                <a href="https://www.figma.com/design/RoQJ0sogdFuygnQz7IkXLQ/ADOTEPET?t=lImVqvAgmLcyFzT1-1" target="_blank" class="project-link link-secondary">
+                                    <i class="fa-brands fa-figma"></i> Figma
+                                </a>
+                                <a href="#" target="_blank" class="project-link btn-glow">
+                                    Conhecer Plataforma <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Controle Financeiro -->
+                    <article class="project-card">
+                        <div class="project-info">
+                            <span class="project-category">Full-Stack / SaaS</span>
+                            <h3 class="project-title">Controle Financeiro</h3>
+                            <p class="project-desc">
+                                Aplicação web de controle financeiro pessoal criada com Next.js, TypeScript e Supabase. Permite gerenciar receitas, despesas, cartões, parcelamentos e meses financeiros personalizados, com dashboard de métricas, gráficos e projeções para apoiar o planejamento mensal.
+                            </p>
+                            <div class="project-tags">
+                                <span>Next.js</span>
+                                <span>TypeScript</span>
+                                <span>Supabase</span>
+                                <span>Tailwind CSS</span>
+                                <span>shadcn/ui</span>
+                            </div>
+                            <div class="project-actions">
+                                <a href="https://github.com/luucasviana/financial-control" target="_blank" class="project-link link-secondary">
+                                    <i class="fa-brands fa-github"></i> Código
+                                </a>
+                                <a href="https://financial-ctr.netlify.app/" target="_blank" class="project-link btn-glow">
+                                    Acessar App <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- CONTATO SECTION -->
+            <section id="contatos" class="content-section">
+                <div class="section-header">
+                    <span class="section-tag">04 / CONEXÃO</span>
+                    <h2 class="section-title">Vamos conversar?</h2>
+                </div>
+                
+                <p class="contact-intro">
+                    Se você tem um projeto em mente, precisa de um desenvolvedor dedicado para a sua equipe, ou quer apenas trocar uma ideia sobre desenvolvimento front-end, sinta-se à vontade para me mandar uma mensagem!
+                </p>
+                
+                <div class="contact-grid">
+                    <a href="https://wa.me/+5512997741275" target="_blank" class="contact-card" style="--brand-color: #25d366;">
+                        <div class="contact-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                        <div class="contact-details">
+                            <h3>WhatsApp</h3>
+                            <p>Conversar diretamente</p>
+                        </div>
+                        <span class="contact-action"><i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
+                    <a href="mailto:jose.lucas.viana@gmail.com" target="_blank" class="contact-card" style="--brand-color: #ea4335;">
+                        <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="contact-details">
+                            <h3>E-mail</h3>
+                            <p>jose.lucas.viana@gmail.com</p>
+                        </div>
+                        <span class="contact-action"><i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
+                    <a href="https://github.com/luucasviana" target="_blank" class="contact-card" style="--brand-color: #ffffff;">
+                        <div class="contact-icon"><i class="fa-brands fa-github"></i></div>
+                        <div class="contact-details">
+                            <h3>GitHub</h3>
+                            <p>/luucasviana</p>
+                        </div>
+                        <span class="contact-action"><i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
+                    <a href="https://www.linkedin.com/in/jose-lucas-menezes/" target="_blank" class="contact-card" style="--brand-color: #0077b5;">
+                        <div class="contact-icon"><i class="fa-brands fa-linkedin-in"></i></div>
+                        <div class="contact-details">
+                            <h3>LinkedIn</h3>
+                            <p>jose-lucas-menezes</p>
+                        </div>
+                        <span class="contact-action"><i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
+                    <a href="https://instagram.com/luucasviana" target="_blank" class="contact-card" style="--brand-color: #e1306c;">
+                        <div class="contact-icon"><i class="fa-brands fa-instagram"></i></div>
+                        <div class="contact-details">
+                            <h3>Instagram</h3>
+                            <p>@luucasviana</p>
+                        </div>
+                        <span class="contact-action"><i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+                </div>
+
+                <footer class="app-footer">
+                    <p>Totalmente feito sob o efeito de cafeína. <i class="fa-solid fa-mug-hot animated-mug"></i></p>
+                    <p>© 2026 | <span>Lucas Viana</span></p>
+                </footer>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
