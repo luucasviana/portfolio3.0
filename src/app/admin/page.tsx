@@ -18,18 +18,17 @@ export default async function AdminDashboard() {
   // If database credentials are missing in the environment, show a setup screen
   if (!sql) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center p-6 text-center bg-background text-foreground">
-        <div className="max-w-md p-8 rounded-xl bg-card border border-border shadow-lg">
-          <i className="fa-solid fa-triangle-exclamation text-4xl text-amber-400 mb-4"></i>
-          <h1 className="text-xl font-bold mb-3 text-card-foreground">Banco de Dados Desconectado</h1>
-          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-            As variáveis de ambiente do banco de dados (<code className="text-primary">POSTGRES_URL</code>) não foram encontradas no ambiente.
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground">
+        <div className="max-w-md text-center space-y-4">
+          <h1 className="text-xl font-bold">Banco de Dados Desconectado</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            As variáveis de ambiente do banco de dados (<code className="font-mono text-foreground">POSTGRES_URL</code>) não foram encontradas.
           </p>
-          <p className="text-xs text-muted-foreground mb-6">
-            Por favor, conecte a integração <strong>Vercel Postgres</strong> ao seu projeto no console da Vercel.
+          <p className="text-sm text-muted-foreground">
+            Conecte a integração <strong>Vercel Postgres</strong> ao seu projeto.
           </p>
-          <a href="/" className="text-xs text-primary hover:underline">
-            <i className="fa-solid fa-chevron-left mr-1"></i> Voltar ao site
+          <a href="/" className="text-sm text-muted-foreground hover:text-foreground underline">
+            ← Voltar ao site
           </a>
         </div>
       </div>

@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br" className={cn("dark", plusJakartaSans.variable, "font-sans", geist.variable)}>
+    <html lang="pt-br" className={cn(plusJakartaSans.variable, "font-sans", geist.variable)}>
       <head>
         {/* FontAwesome for Premium Icons */}
         <link
