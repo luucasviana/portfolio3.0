@@ -2,6 +2,19 @@
 
 import React, { useState } from "react";
 import { loginAction } from "../actions";
+import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 export default function AdminLogin() {
   const [password, setPassword] = useState("");
@@ -29,120 +42,98 @@ export default function AdminLogin() {
   };
 
   return (
-    <div 
-      className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden select-none"
-      style={{
-        backgroundColor: "#12151a",
-        fontFamily: "'Plus Jakarta Sans', sans-serif"
-      }}
-    >
-      {/* Subtle Dynamic Background Mesh */}
-      <div 
+    <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden select-none bg-background">
+      {/* Radial gradient background glow */}
+      <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none rounded-full blur-[140px]"
         style={{
-          background: "radial-gradient(circle, rgba(0, 173, 181, 0.05) 0%, transparent 70%)",
-          zIndex: 0
+          background:
+            "radial-gradient(circle, hsl(var(--primary) / 0.07) 0%, transparent 70%)",
         }}
-      ></div>
+      />
 
-      {/* Premium shadcn/ui Card Container */}
-      <div 
-        className="w-full max-w-[380px] rounded-2xl p-6 md:p-8 relative z-10 border transition-all duration-300 bg-[#161a22]/90 backdrop-blur-md"
-        style={{
-          borderColor: "#222c3f",
-          boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.7)"
-        }}
+      <Card
+        className={cn(
+          "w-full max-w-[400px] relative z-10 border-border/40 bg-card/90 backdrop-blur-md shadow-[0_20px_40px_-15px_rgba(0,0,0,0.7)]"
+        )}
       >
-        {/* Sleek Brand Shield Icon */}
-        <div className="flex justify-center mb-5">
-          <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-sm transition-transform duration-300 hover:scale-105"
-            style={{ 
-              background: "rgba(0, 173, 181, 0.08)",
-              border: "1px solid rgba(0, 173, 181, 0.25)",
-              color: "#00adb5",
-              boxShadow: "0 0 20px rgba(0, 173, 181, 0.1)"
-            }}
-          >
-            <i className="fa-solid fa-shield-halved text-base"></i>
+        <CardHeader className="items-center text-center pb-0">
+          {/* Shield icon */}
+          <div className="mb-2 flex size-10 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary shadow-[0_0_20px_hsl(var(--primary)/0.1)] transition-transform duration-300 hover:scale-105">
+            <i className="fa-solid fa-shield-halved text-base" />
           </div>
-        </div>
 
-        <div className="flex flex-col gap-1.5 text-center mb-6">
-          <h1 className="text-xl font-bold tracking-tight text-white">
+          <CardTitle className="text-xl font-bold tracking-tight text-foreground">
             Console Administrativo
-          </h1>
-          <p className="text-xs text-slate-300 font-light leading-relaxed">
+          </CardTitle>
+          <CardDescription className="text-xs font-light leading-relaxed">
             Insira sua chave mestra para gerenciar o portfólio.
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label 
-              htmlFor="password" 
-              className="text-[11px] font-bold uppercase tracking-wider text-slate-300"
-            >
-              Senha de Acesso
-            </label>
-            <div className="relative flex items-center">
-              <span className="absolute left-3 text-slate-400 text-sm">
-                <i className="fa-solid fa-lock"></i>
-              </span>
-              <input
-                type="password"
-                id="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Digite sua senha..."
-                className="w-full pl-9 pr-3 py-2.5 rounded-lg transition-all duration-200 text-sm placeholder-slate-500 bg-[#0f1218] border border-[#222c3f] text-white outline-none focus:border-[#00adb5] focus:ring-1 focus:ring-[#00adb5] hover:border-slate-700"
-              />
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label
+                htmlFor="password"
+                className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground"
+              >
+                Senha de Acesso
+              </Label>
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-muted-foreground text-sm pointer-events-none">
+                  <i className="fa-solid fa-lock" />
+                </span>
+                <Input
+                  type="password"
+                  id="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Digite sua senha..."
+                  className="h-10 pl-9 bg-background/50"
+                />
+              </div>
             </div>
-          </div>
 
-          {error && (
-            <div 
-              className="text-[12px] py-2 px-3 rounded-lg text-center flex items-center justify-center gap-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 font-semibold"
-            >
-              <i className="fa-solid fa-triangle-exclamation"></i>
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2.5 rounded-lg font-extrabold text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer mt-2 shadow-[0_4px_12px_rgba(0,173,181,0.15)] hover:shadow-[0_4px_20px_rgba(0,173,181,0.3)] hover:scale-[1.01] active:scale-[0.99]"
-            style={{
-              background: "#00adb5",
-              color: "#12151a",
-              border: "none",
-            }}
-          >
-            {loading ? (
-              <>
-                <i className="fa-solid fa-spinner fa-spin text-[#12151a]"></i> Autenticando...
-              </>
-            ) : (
-              <>
-                Entrar no Painel <i className="fa-solid fa-arrow-right-to-bracket text-xs ml-0.5"></i>
-              </>
+            {error && (
+              <div className="flex items-center justify-center gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-xs font-semibold text-destructive">
+                <i className="fa-solid fa-triangle-exclamation" />
+                {error}
+              </div>
             )}
-          </button>
-        </form>
 
-        <div className="text-center mt-6 pt-4 border-t border-[#222c3f]">
-          <a 
-            href="/" 
-            className="text-xs font-semibold inline-flex items-center gap-1.5 transition-all duration-200 text-slate-300 hover:text-[#00adb5]"
-            style={{ textDecoration: "none" }}
-          >
-            <i className="fa-solid fa-chevron-left text-[10px]"></i> Voltar ao site principal
-          </a>
-        </div>
-      </div>
+            <Button
+              type="submit"
+              variant="default"
+              disabled={loading}
+              className="w-full h-10 font-extrabold tracking-wide shadow-[0_4px_12px_hsl(var(--primary)/0.15)] hover:shadow-[0_4px_20px_hsl(var(--primary)/0.3)] cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-spinner fa-spin" /> Autenticando...
+                </>
+              ) : (
+                <>
+                  Entrar no Painel{" "}
+                  <i className="fa-solid fa-arrow-right-to-bracket text-xs ml-0.5" />
+                </>
+              )}
+            </Button>
+          </form>
+        </CardContent>
+
+        <Separator />
+
+        <CardFooter className="justify-center border-t-0 bg-transparent">
+          <Button variant="ghost" asChild className="text-xs text-muted-foreground hover:text-primary">
+            <a href="/">
+              <i className="fa-solid fa-chevron-left text-[10px]" /> Voltar ao
+              site principal
+            </a>
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
-

@@ -18,20 +18,17 @@ export default async function AdminDashboard() {
   // If database credentials are missing in the environment, show a setup screen
   if (!sql) {
     return (
-      <div 
-        className="min-h-screen w-full flex items-center justify-center p-6 text-center"
-        style={{ backgroundColor: "#12151a", color: "#eeeeee", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-      >
-        <div className="max-w-md p-8 rounded-3xl" style={{ background: "#2d343f", border: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="min-h-screen w-full flex items-center justify-center p-6 text-center bg-background text-foreground">
+        <div className="max-w-md p-8 rounded-xl bg-card border border-border shadow-lg">
           <i className="fa-solid fa-triangle-exclamation text-4xl text-amber-400 mb-4"></i>
-          <h1 className="text-xl font-bold mb-3">Banco de Dados Desconectado</h1>
-          <p className="text-sm font-light text-slate-400 mb-6 leading-relaxed">
-            As variáveis de ambiente do banco de dados (<code>POSTGRES_URL</code>) não foram encontradas no ambiente.
+          <h1 className="text-xl font-bold mb-3 text-card-foreground">Banco de Dados Desconectado</h1>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+            As variáveis de ambiente do banco de dados (<code className="text-primary">POSTGRES_URL</code>) não foram encontradas no ambiente.
           </p>
-          <p className="text-xs font-light text-slate-500 mb-6">
+          <p className="text-xs text-muted-foreground mb-6">
             Por favor, conecte a integração <strong>Vercel Postgres</strong> ao seu projeto no console da Vercel.
           </p>
-          <a href="/" className="text-xs text-[#00adb5] hover:underline">
+          <a href="/" className="text-xs text-primary hover:underline">
             <i className="fa-solid fa-chevron-left mr-1"></i> Voltar ao site
           </a>
         </div>
