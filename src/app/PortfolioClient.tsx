@@ -376,12 +376,18 @@ export default function PortfolioClient({
               </p>
               <div className="hero-actions">
                 {initialProfile.cv_url && initialProfile.cv_visible !== false && (
-                  <a href={initialProfile.cv_url} className="btn btn-primary" download>
+                  <a 
+                    href={`/api/download?url=${encodeURIComponent(initialProfile.cv_url)}`} 
+                    className="btn btn-primary"
+                  >
                     <i className="fa-solid fa-download"></i> Download CV
                   </a>
                 )}
                 {initialProfile.certificate_bubble_url && initialProfile.certificate_bubble_visible !== false && (
-                  <a href={initialProfile.certificate_bubble_url} className="btn btn-secondary" download>
+                  <a 
+                    href={`/api/download?url=${encodeURIComponent(initialProfile.certificate_bubble_url)}`} 
+                    className="btn btn-secondary"
+                  >
                     <i className="fa-solid fa-award"></i> Certificado Bubble
                   </a>
                 )}

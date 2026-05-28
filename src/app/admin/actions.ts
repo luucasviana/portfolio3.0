@@ -276,9 +276,22 @@ export async function uploadFileAction(formData: FormData): Promise<{ success: b
 
     // Unique filename to prevent collision and cache issues
     const uniqueName = `portfolio/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
-    const blob = await put(uniqueName, file, {
-      access: "public",
-    });
+    
+    let blob;
+    try {
+      blob = await put(uniqueName, file, {
+        access: "public",
+      });
+    } catch (e: any) {
+      // If the store is configured as private, retry with private access
+      if (e.message?.includes("private") || e.message?.includes("Private")) {
+        blob = await put(uniqueName, file, {
+          access: "private",
+        });
+      } else {
+        throw e;
+      }
+    }
 
     return { success: true, url: blob.url };
   } catch (error: any) {
