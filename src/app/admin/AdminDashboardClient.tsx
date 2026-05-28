@@ -12,6 +12,7 @@ import {
   triggerDbInit,
   uploadFileAction
 } from "./actions";
+import { getAnalyticsData } from "./analytics";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,26 @@ export default function AdminDashboardClient({
   const [newExp, setNewExp] = useState({ company_name: "", logo_text: "", logo_url: "" });
   const [socials, setSocials] = useState<any[]>(initialSocials || []);
   const [analytics, setAnalytics] = useState<any>(initialAnalytics);
+  const [selectedRange, setSelectedRange] = useState<"today" | "yesterday" | "week" | "month" | "all">("today");
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false);
+
+  const handleRangeChange = async (range: "today" | "yesterday" | "week" | "month" | "all") => {
+    setSelectedRange(range);
+    setIsAnalyticsLoading(true);
+    try {
+      const data = await getAnalyticsData(range);
+      if (data) {
+        setAnalytics(data);
+      } else {
+        showToast("Falha ao carregar métricas para o período selecionado.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("Erro ao filtrar métricas.", "error");
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  };
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -798,9 +819,35 @@ export default function AdminDashboardClient({
             {/* ======== ANALYTICS TAB ======== */}
             {activeTab === "analytics" && (
               <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="mb-4">
-                  <h2 className="font-heading text-xl font-semibold text-white tracking-tight">Métricas & Visitas</h2>
-                  <p className="text-xs text-[#718096] mt-1">Acompanhe acessos, downloads e engajamento com o seu portfólio em tempo real.</p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-4">
+                  <div>
+                    <h2 className="font-heading text-xl font-semibold text-white tracking-tight">Métricas & Visitas</h2>
+                    <p className="text-xs text-[#718096] mt-1">Acompanhe acessos, downloads e engajamento com o seu portfólio em tempo real.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <span className="text-[10px] text-[#718096] uppercase tracking-wider font-semibold">Período:</span>
+                    <div className="relative">
+                      <select
+                        value={selectedRange}
+                        onChange={(e) => handleRangeChange(e.target.value as any)}
+                        disabled={isAnalyticsLoading}
+                        className="bg-[#1c2027] border border-white/10 text-xs text-white rounded-lg px-3 py-1.5 pr-8 focus:outline-none focus:border-[#00adb5] transition-all cursor-pointer appearance-none disabled:opacity-50 min-w-[120px]"
+                      >
+                        <option value="today">Hoje</option>
+                        <option value="yesterday">Ontem</option>
+                        <option value="week">Última Semana</option>
+                        <option value="month">Último Mês</option>
+                        <option value="all">Sempre</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#718096]">
+                        <svg className="fill-current h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                      </div>
+                    </div>
+                    {isAnalyticsLoading && <Loader2 className="w-3.5 h-3.5 text-[#00adb5] animate-spin" />}
+                  </div>
                 </div>
 
                 {!analytics ? (

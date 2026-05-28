@@ -69,16 +69,59 @@ function safeDecode(val: string | null | undefined): string {
 /**
  * Server Action to fetch consolidated metrics and logs for the Admin Dashboard.
  */
-export async function getAnalyticsData() {
+export async function getAnalyticsData(range: "today" | "yesterday" | "week" | "month" | "all" = "today") {
   const sql = getSqlClient();
   if (!sql) return null;
 
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  let startDate: Date | null = null;
+  let endDate: Date | null = null;
+
+  if (range === "today") {
+    startDate = todayStart;
+  } else if (range === "yesterday") {
+    startDate = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+    endDate = todayStart;
+  } else if (range === "week") {
+    startDate = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
+  } else if (range === "month") {
+    startDate = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
+  }
+
+  const startStr = startDate ? startDate.toISOString() : null;
+  const endStr = endDate ? endDate.toISOString() : null;
+
   try {
     // 1. Totalizadores (KPIs)
-    const totalVisitsRes = await sql`SELECT COUNT(*)::int as count FROM visit_logs;`;
-    const cvClicksRes = await sql`SELECT COUNT(*)::int as count FROM click_logs WHERE target_type = 'cv';`;
-    const certClicksRes = await sql`SELECT COUNT(*)::int as count FROM click_logs WHERE target_type = 'certificate';`;
-    const contactClicksRes = await sql`SELECT COUNT(*)::int as count FROM click_logs WHERE target_type = 'contact';`;
+    const totalVisitsRes = await sql`
+      SELECT COUNT(*)::int as count 
+      FROM visit_logs
+      WHERE (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp);
+    `;
+    const cvClicksRes = await sql`
+      SELECT COUNT(*)::int as count 
+      FROM click_logs 
+      WHERE target_type = 'cv'
+        AND (${startStr}::text IS NULL OR clicked_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR clicked_at < ${endStr}::timestamp);
+    `;
+    const certClicksRes = await sql`
+      SELECT COUNT(*)::int as count 
+      FROM click_logs 
+      WHERE target_type = 'certificate'
+        AND (${startStr}::text IS NULL OR clicked_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR clicked_at < ${endStr}::timestamp);
+    `;
+    const contactClicksRes = await sql`
+      SELECT COUNT(*)::int as count 
+      FROM click_logs 
+      WHERE target_type = 'contact'
+        AND (${startStr}::text IS NULL OR clicked_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR clicked_at < ${endStr}::timestamp);
+    `;
 
     const stats = {
       totalVisits: totalVisitsRes[0]?.count || 0,
@@ -92,6 +135,8 @@ export async function getAnalyticsData() {
       SELECT target_detail as platform, COUNT(*)::int as count 
       FROM click_logs 
       WHERE target_type = 'contact' 
+        AND (${startStr}::text IS NULL OR clicked_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR clicked_at < ${endStr}::timestamp)
       GROUP BY target_detail 
       ORDER BY count DESC;
     `;
@@ -100,6 +145,8 @@ export async function getAnalyticsData() {
     const topLocations = await sql`
       SELECT city, region, country, COUNT(*)::int as count 
       FROM visit_logs 
+      WHERE (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp)
       GROUP BY city, region, country 
       ORDER BY count DESC 
       LIMIT 8;
@@ -109,6 +156,8 @@ export async function getAnalyticsData() {
     const devicesBreakdown = await sql`
       SELECT device_type as device, COUNT(*)::int as count 
       FROM visit_logs 
+      WHERE (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp)
       GROUP BY device_type 
       ORDER BY count DESC;
     `;
@@ -117,6 +166,8 @@ export async function getAnalyticsData() {
     const browsersBreakdown = await sql`
       SELECT browser, COUNT(*)::int as count 
       FROM visit_logs 
+      WHERE (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp)
       GROUP BY browser 
       ORDER BY count DESC;
     `;
@@ -125,6 +176,8 @@ export async function getAnalyticsData() {
     const trafficSources = await sql`
       SELECT referrer, COUNT(*)::int as count 
       FROM visit_logs 
+      WHERE (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp)
       GROUP BY referrer 
       ORDER BY count DESC 
       LIMIT 5;
@@ -134,6 +187,8 @@ export async function getAnalyticsData() {
     const recentVisits = await sql`
       SELECT ip_address, city, region, country, device_type, browser, referrer, visited_at 
       FROM visit_logs 
+      WHERE (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp)
       ORDER BY visited_at DESC 
       LIMIT 15;
     `;
