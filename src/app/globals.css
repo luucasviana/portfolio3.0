@@ -148,11 +148,21 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 32px 0;
     z-index: 100;
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
     transition: var(--transition-smooth);
+}
+
+.logo {
+    position: absolute;
+    top: 32px;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 32px;
 }
 
 /* Logo */
