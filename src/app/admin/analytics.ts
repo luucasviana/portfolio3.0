@@ -53,6 +53,19 @@ export async function recordClickAction(targetType: "cv" | "certificate" | "cont
   }
 }
 
+function safeDecode(val: string | null | undefined): string {
+  if (!val) return "Desconhecido";
+  try {
+    return decodeURIComponent(val);
+  } catch {
+    try {
+      return decodeURIComponent(escape(val));
+    } catch {
+      return val;
+    }
+  }
+}
+
 /**
  * Server Action to fetch consolidated metrics and logs for the Admin Dashboard.
  */
@@ -125,14 +138,26 @@ export async function getAnalyticsData() {
       LIMIT 15;
     `;
 
+    const mappedLocations = topLocations.map((loc: any) => ({
+      ...loc,
+      city: safeDecode(loc.city),
+      region: safeDecode(loc.region),
+    }));
+
+    const mappedRecent = recentVisits.map((visit: any) => ({
+      ...visit,
+      city: safeDecode(visit.city),
+      region: safeDecode(visit.region),
+    }));
+
     return {
       stats,
       contactBreakdown,
-      topLocations,
+      topLocations: mappedLocations,
       devicesBreakdown,
       browsersBreakdown,
       trafficSources,
-      recentVisits,
+      recentVisits: mappedRecent,
     };
   } catch (error) {
     console.error("Failed to fetch analytics data:", error);

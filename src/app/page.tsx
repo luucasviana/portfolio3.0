@@ -79,18 +79,22 @@ export default async function Home() {
       const rawIp = reqHeaders.get("x-real-ip") || reqHeaders.get("x-forwarded-for") || "";
       const ip = rawIp.split(",")[0].trim() || "127.0.0.1";
       
-      let city = reqHeaders.get("x-vercel-ip-city") || "Desconhecido";
-      let region = reqHeaders.get("x-vercel-ip-country-region") || "Desconhecido";
-      let country = reqHeaders.get("x-vercel-ip-country") || "Desconhecido";
-
-      // ISO-8859-1 decoding for city
-      if (city && city !== "Desconhecido") {
+      const decodeHeaderValue = (val: string | null | undefined): string => {
+        if (!val) return "Desconhecido";
         try {
-          city = decodeURIComponent(escape(city));
+          return decodeURIComponent(val);
         } catch {
-          // Fallback if not ISO encoded
+          try {
+            return decodeURIComponent(escape(val));
+          } catch {
+            return val;
+          }
         }
-      }
+      };
+
+      let city = decodeHeaderValue(reqHeaders.get("x-vercel-ip-city"));
+      let region = decodeHeaderValue(reqHeaders.get("x-vercel-ip-country-region"));
+      let country = decodeHeaderValue(reqHeaders.get("x-vercel-ip-country"));
 
       if (ip === "::1" || ip === "127.0.0.1" || ip.startsWith("192.168.") || ip.startsWith("10.")) {
         city = "Localhost";
