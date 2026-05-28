@@ -70,11 +70,7 @@ html {
     scroll-behavior: smooth;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Preflight reset handled automatically by Tailwind CSS */
 
 body {
     background-color: var(--bg-primary);
