@@ -159,6 +159,17 @@ export async function getAnalyticsData(range: "today" | "yesterday" | "week" | "
       LIMIT 8;
     `;
 
+    // Country-level breakdown for the interactive world map
+    const countryBreakdown = await sql`
+      SELECT country, COUNT(*)::int as count 
+      FROM visit_logs 
+      WHERE country IS NOT NULL AND country != 'Desconhecido' AND country != 'Local' AND country != 'Localhost'
+        AND (${startStr}::text IS NULL OR visited_at >= ${startStr}::timestamp)
+        AND (${endStr}::text IS NULL OR visited_at < ${endStr}::timestamp)
+      GROUP BY country 
+      ORDER BY count DESC;
+    `;
+
     // 4. Tipo de Dispositivo
     const devicesBreakdown = await sql`
       SELECT device_type as device, COUNT(*)::int as count 
@@ -216,6 +227,7 @@ export async function getAnalyticsData(range: "today" | "yesterday" | "week" | "
       stats,
       contactBreakdown,
       topLocations: mappedLocations,
+      countryBreakdown,
       devicesBreakdown,
       browsersBreakdown,
       trafficSources,

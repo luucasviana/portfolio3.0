@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { 
   updateProfile, 
   saveProject, 
@@ -13,6 +14,11 @@ import {
   uploadFileAction
 } from "./actions";
 import { getAnalyticsData } from "./analytics";
+
+const WorldMapComponent = dynamic(
+  () => import("react-svg-worldmap").then((mod) => mod.WorldMap),
+  { ssr: false }
+);
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -885,7 +891,7 @@ export default function AdminDashboardClient({
                       )}
 
                       <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
-                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Downloads de CV</span>
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Currículo</span>
                         <div className="flex items-baseline justify-between mt-2">
                           <span className="text-2xl font-bold text-white font-heading">{analytics.stats.cvClicks}</span>
                           <span className="text-[10px] text-purple-400 bg-purple-400/5 px-1.5 py-0.5 rounded-full font-medium">Cliques</span>
@@ -893,7 +899,7 @@ export default function AdminDashboardClient({
                       </Card>
 
                       <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
-                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Cliques Certificado</span>
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Certificado</span>
                         <div className="flex items-baseline justify-between mt-2">
                           <span className="text-2xl font-bold text-white font-heading">{analytics.stats.certClicks}</span>
                           <span className="text-[10px] text-amber-400 bg-amber-400/5 px-1.5 py-0.5 rounded-full font-medium">Cliques</span>
@@ -901,7 +907,7 @@ export default function AdminDashboardClient({
                       </Card>
 
                       <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
-                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Total de Contatos</span>
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Contatos</span>
                         <div className="flex items-baseline justify-between mt-2">
                           <span className="text-2xl font-bold text-white font-heading">{analytics.stats.contactClicks}</span>
                           <span className="text-[10px] text-emerald-400 bg-emerald-400/5 px-1.5 py-0.5 rounded-full font-medium">Cliques</span>
@@ -969,44 +975,78 @@ export default function AdminDashboardClient({
                         </CardContent>
                       </Card>
                     </div>
-
-                    {/* Geolocation Top Cidades */}
+                       {/* Geolocation Map & Top Cidades */}
                     <Card className="bg-[#1c2027] border border-white/5 shadow-md">
                       <CardHeader className="border-b border-white/5 py-4 px-6">
-                        <CardTitle className="text-xs font-semibold text-white">Principais Cidades dos Visitantes (Via IP)</CardTitle>
-                        <CardDescription className="text-[10px] text-[#718096]">Geolocalização instantânea detectada pela infraestrutura da Vercel.</CardDescription>
+                        <CardTitle className="text-xs font-semibold text-white">Origem dos Visitantes (Via IP)</CardTitle>
+                        <CardDescription className="text-[10px] text-[#718096]">Visualização geográfica e cidades de acesso detectadas pela infraestrutura da Vercel.</CardDescription>
                       </CardHeader>
                       <CardContent className="p-6">
-                        {analytics.topLocations.length === 0 ? (
-                          <p className="text-xs text-[#718096] italic text-center py-4">Nenhuma geolocalização mapeada.</p>
-                        ) : (
-                          <div className="grid gap-4 sm:grid-cols-2">
-                            {analytics.topLocations.map((item: any, idx: number) => {
-                              const maxVal = Math.max(...analytics.topLocations.map((i: any) => i.count), 1);
-                              const pct = Math.round((item.count / maxVal) * 100);
-                              
-                              let locationLabel = `${item.city}`;
-                              if (item.region && item.region !== "Desconhecido" && item.region !== "Dev") {
-                                locationLabel += `, ${item.region}`;
-                              }
-                              if (item.country && item.country !== "Desconhecido" && item.country !== "Local") {
-                                locationLabel += ` (${item.country})`;
-                              }
-
-                              return (
-                                <div key={idx} className="space-y-1.5 p-3 rounded-lg bg-white/[0.01] border border-white/5">
-                                  <div className="flex items-center justify-between text-xs">
-                                    <span className="text-white font-medium truncate max-w-[180px]">{locationLabel}</span>
-                                    <span className="text-[#00adb5] font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">visitas</span></span>
-                                  </div>
-                                  <div className="w-full bg-[#242933] h-1.5 rounded-full overflow-hidden">
-                                    <div className="bg-[#00adb5] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-                                  </div>
-                                </div>
-                              );
-                            })}
+                        <div className="grid gap-6 lg:grid-cols-5 items-center">
+                          {/* Map Visualizer (3/5 width on desktop) */}
+                          <div className="lg:col-span-3 flex flex-col items-center justify-center p-4 rounded-xl bg-white/[0.01] border border-white/5 min-h-[300px]">
+                            {!analytics.countryBreakdown || analytics.countryBreakdown.length === 0 ? (
+                              <p className="text-xs text-[#718096] italic">Aguardando dados geográficos de produção...</p>
+                            ) : (
+                              <div className="w-full flex justify-center items-center overflow-x-auto select-none pointer-events-auto">
+                                <WorldMapComponent
+                                  color="#00adb5"
+                                  valueSuffix=" visitas"
+                                  size="responsive"
+                                  data={analytics.countryBreakdown.map((item: any) => ({
+                                    country: item.country.toLowerCase(),
+                                    value: item.count
+                                  }))}
+                                  styleFunction={(context: any) => ({
+                                    fill: context.countryValue > 0 ? "#00adb5" : "#2d3748",
+                                    fillOpacity: context.countryValue > 0 ? 0.35 + (context.countryValue / context.maxValue) * 0.65 : 0.15,
+                                    stroke: "rgba(255, 255, 255, 0.08)",
+                                    strokeWidth: 0.8,
+                                    strokeOpacity: 0.8,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s ease-in-out",
+                                  })}
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
+                          
+                          {/* Top Cities ranking list (2/5 width on desktop) */}
+                          <div className="lg:col-span-2 space-y-4 h-full flex flex-col justify-center">
+                            <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Principais Cidades</span>
+                            
+                            {analytics.topLocations.length === 0 ? (
+                              <p className="text-xs text-[#718096] italic text-center py-4">Nenhuma cidade detectada.</p>
+                            ) : (
+                              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                                {analytics.topLocations.slice(0, 5).map((item: any, idx: number) => {
+                                  const maxVal = Math.max(...analytics.topLocations.map((i: any) => i.count), 1);
+                                  const pct = Math.round((item.count / maxVal) * 100);
+                                  
+                                  let locationLabel = `${item.city}`;
+                                  if (item.region && item.region !== "Desconhecido" && item.region !== "Dev") {
+                                    locationLabel += `, ${item.region}`;
+                                  }
+                                  if (item.country && item.country !== "Desconhecido" && item.country !== "Local") {
+                                    locationLabel += ` (${item.country})`;
+                                  }
+
+                                  return (
+                                    <div key={idx} className="space-y-1.5 p-3 rounded-lg bg-white/[0.01] border border-white/5">
+                                      <div className="flex items-center justify-between text-xs">
+                                        <span className="text-white font-medium truncate max-w-[160px]" title={locationLabel}>{locationLabel}</span>
+                                        <span className="text-[#00adb5] font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">visitas</span></span>
+                                      </div>
+                                      <div className="w-full bg-[#242933] h-1.5 rounded-full overflow-hidden">
+                                        <div className="bg-[#00adb5] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </CardContent>
                     </Card>
 
