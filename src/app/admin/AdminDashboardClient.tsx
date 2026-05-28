@@ -15,8 +15,8 @@ import {
 } from "./actions";
 import { getAnalyticsData } from "./analytics";
 
-const WorldMapComponent = dynamic(
-  () => import("react-svg-worldmap").then((mod) => mod.WorldMap),
+const WorldBubbleMap = dynamic(
+  () => import("./WorldBubbleMap"),
   { ssr: false }
 );
 
@@ -984,30 +984,11 @@ export default function AdminDashboardClient({
                       <CardContent className="p-6">
                         <div className="grid gap-6 lg:grid-cols-5 items-center">
                           {/* Map Visualizer (3/5 width on desktop) */}
-                          <div className="lg:col-span-3 flex flex-col items-center justify-center p-4 rounded-xl bg-white/[0.01] border border-white/5 min-h-[300px]">
-                            {!analytics.countryBreakdown || analytics.countryBreakdown.length === 0 ? (
+                          <div className="lg:col-span-3 flex flex-col items-center justify-center p-4 rounded-xl bg-[#0e121a] border border-white/5 min-h-[300px]">
+                            {!analytics.topLocations || analytics.topLocations.length === 0 ? (
                               <p className="text-xs text-[#718096] italic">Aguardando dados geográficos de produção...</p>
                             ) : (
-                              <div className="w-full flex justify-center items-center overflow-x-auto select-none pointer-events-auto">
-                                <WorldMapComponent
-                                  color="#00adb5"
-                                  valueSuffix=" visitas"
-                                  size="responsive"
-                                  data={analytics.countryBreakdown.map((item: any) => ({
-                                    country: item.country.toLowerCase(),
-                                    value: item.count
-                                  }))}
-                                  styleFunction={(context: any) => ({
-                                    fill: context.countryValue > 0 ? "#00adb5" : "#2d3748",
-                                    fillOpacity: context.countryValue > 0 ? 0.35 + (context.countryValue / context.maxValue) * 0.65 : 0.15,
-                                    stroke: "rgba(255, 255, 255, 0.08)",
-                                    strokeWidth: 0.8,
-                                    strokeOpacity: 0.8,
-                                    cursor: "pointer",
-                                    transition: "all 0.2s ease-in-out",
-                                  })}
-                                />
-                              </div>
+                              <WorldBubbleMap topLocations={analytics.topLocations} />
                             )}
                           </div>
                           
