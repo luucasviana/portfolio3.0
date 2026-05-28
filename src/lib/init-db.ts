@@ -69,6 +69,29 @@ export async function initializeDatabase() {
       );
     `;
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS visit_logs (
+        id SERIAL PRIMARY KEY,
+        ip_address VARCHAR(100) DEFAULT '',
+        city VARCHAR(100) DEFAULT 'Desconhecido',
+        region VARCHAR(100) DEFAULT 'Desconhecido',
+        country VARCHAR(100) DEFAULT 'Desconhecido',
+        device_type VARCHAR(50) DEFAULT 'Desktop',
+        browser VARCHAR(50) DEFAULT 'Desconhecido',
+        referrer VARCHAR(255) DEFAULT 'Direto',
+        visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS click_logs (
+        id SERIAL PRIMARY KEY,
+        target_type VARCHAR(50) NOT NULL,
+        target_detail VARCHAR(100) DEFAULT '',
+        clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
     // 2. Check if already seeded to prevent duplicate operations
     const profiles = await sql`SELECT * FROM profile LIMIT 1;`;
     if (profiles.length === 0) {

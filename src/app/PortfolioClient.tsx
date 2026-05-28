@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { recordClickAction } from "./admin/analytics";
 
 // Types for structural clarity
 interface Project {
@@ -378,6 +379,7 @@ export default function PortfolioClient({
                 {initialProfile.cv_url && initialProfile.cv_visible !== false && (
                   <a 
                     href={`/api/download?url=${encodeURIComponent(initialProfile.cv_url)}`} 
+                    onClick={() => recordClickAction("cv")}
                     className="btn btn-primary"
                   >
                     <i className="fa-solid fa-download"></i> Download CV
@@ -386,6 +388,7 @@ export default function PortfolioClient({
                 {initialProfile.certificate_bubble_url && initialProfile.certificate_bubble_visible !== false && (
                   <a 
                     href={`/api/download?url=${encodeURIComponent(initialProfile.certificate_bubble_url)}`} 
+                    onClick={() => recordClickAction("certificate")}
                     className="btn btn-secondary"
                   >
                     <i className="fa-solid fa-award"></i> Certificado Bubble
@@ -539,6 +542,7 @@ export default function PortfolioClient({
                     href={social.url} 
                     target="_blank" 
                     rel="noopener noreferrer" 
+                    onClick={() => recordClickAction("contact", social.platform)}
                     className="contact-card" 
                     style={{ "--brand-color": social.brand_color } as React.CSSProperties}
                     key={social.id}

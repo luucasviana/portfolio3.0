@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSqlClient } from "@/lib/db";
 import { isAuthenticated } from "./actions";
+import { getAnalyticsData } from "./analytics";
 import AdminDashboardClient from "./AdminDashboardClient";
 
 // Force dynamic server rendering for secure admin portal
@@ -40,6 +41,7 @@ export default async function AdminDashboard() {
   let projects: any[] = [];
   let experience: any[] = [];
   let socials: any[] = [];
+  let analytics: any = null;
   let isDbInitialized = false;
 
   try {
@@ -49,6 +51,13 @@ export default async function AdminDashboard() {
       projects = await sql`SELECT * FROM projects ORDER BY order_index ASC;`;
       experience = await sql`SELECT * FROM experience ORDER BY order_index ASC;`;
       socials = await sql`SELECT * FROM social_links ORDER BY order_index ASC;`;
+      
+      try {
+        analytics = await getAnalyticsData();
+      } catch (err) {
+        console.error("Failed to load analytics:", err);
+      }
+
       isDbInitialized = true;
     }
   } catch (error) {
@@ -63,6 +72,7 @@ export default async function AdminDashboard() {
       initialProjects={projects}
       initialExperience={experience}
       initialSocials={socials}
+      initialAnalytics={analytics}
     />
   );
 }

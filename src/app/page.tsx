@@ -1,4 +1,6 @@
 import { getSqlClient } from "@/lib/db";
+import { headers } from "next/headers";
+import { parseUserAgent } from "./admin/analytics";
 import PortfolioClient from "./PortfolioClient";
 
 // Force dynamic server rendering to reflect admin panel visibility and text updates instantly
@@ -69,7 +71,65 @@ const fallbackSocials = [
 
 export default async function Home() {
   const sql = getSqlClient();
-  
+  const reqHeaders = await headers();
+
+  // Try to record the visit in background
+  if (sql) {
+    try {
+      const rawIp = reqHeaders.get("x-real-ip") || reqHeaders.get("x-forwarded-for") || "";
+      const ip = rawIp.split(",")[0].trim() || "127.0.0.1";
+      
+      let city = reqHeaders.get("x-vercel-ip-city") || "Desconhecido";
+      let region = reqHeaders.get("x-vercel-ip-country-region") || "Desconhecido";
+      let country = reqHeaders.get("x-vercel-ip-country") || "Desconhecido";
+
+      // ISO-8859-1 decoding for city
+      if (city && city !== "Desconhecido") {
+        try {
+          city = decodeURIComponent(escape(city));
+        } catch {
+          // Fallback if not ISO encoded
+        }
+      }
+
+      if (ip === "::1" || ip === "127.0.0.1" || ip.startsWith("192.168.") || ip.startsWith("10.")) {
+        city = "Localhost";
+        region = "Dev";
+        country = "Local";
+      }
+
+      const ua = reqHeaders.get("user-agent") || "";
+      const { device_type, browser } = await parseUserAgent(ua);
+
+      let parsedReferrer = "Direto";
+      const refHeader = reqHeaders.get("referer");
+      if (refHeader) {
+        try {
+          const url = new URL(refHeader);
+          const host = url.hostname.toLowerCase();
+          if (host.includes("linkedin")) parsedReferrer = "LinkedIn";
+          else if (host.includes("instagram")) parsedReferrer = "Instagram";
+          else if (host.includes("github")) parsedReferrer = "GitHub";
+          else if (host.includes("google")) parsedReferrer = "Google Search";
+          else if (host.includes("facebook") || host.includes("fb")) parsedReferrer = "Facebook";
+          else if (host.includes("t.co") || host.includes("twitter") || host.includes("x.com")) parsedReferrer = "X / Twitter";
+          else parsedReferrer = url.hostname;
+        } catch {
+          parsedReferrer = refHeader.substring(0, 50);
+        }
+      }
+
+      // Record the visit! Non-blocking
+      sql`
+        INSERT INTO visit_logs (ip_address, city, region, country, device_type, browser, referrer)
+        VALUES (${ip}, ${city}, ${region}, ${country}, ${device_type}, ${browser}, ${parsedReferrer});
+      `.catch(err => console.error("Failed to log visit:", err));
+
+    } catch (e) {
+      console.error("Failed to parse visit headers:", e);
+    }
+  }
+
   let profile = fallbackProfile;
   let projects = fallbackProjects;
   let experience = fallbackExperience;

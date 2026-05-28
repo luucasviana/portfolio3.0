@@ -38,7 +38,8 @@ import {
   Image, 
   ArrowUpRight,
   CloudLightning,
-  Sparkles
+  Sparkles,
+  BarChart3
 } from "lucide-react";
 
 interface AdminDashboardClientProps {
@@ -47,6 +48,7 @@ interface AdminDashboardClientProps {
   initialProjects: any[];
   initialExperience: any[];
   initialSocials: any[];
+  initialAnalytics?: any;
 }
 
 interface Toast {
@@ -60,19 +62,21 @@ export default function AdminDashboardClient({
   initialProfile,
   initialProjects,
   initialExperience,
-  initialSocials
+  initialSocials,
+  initialAnalytics
 }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<string>("profile");
   const [dbLoading, setDbLoading] = useState(false);
   const [dbMessage, setDbMessage] = useState("");
   const [profile, setProfile] = useState(initialProfile || {
-    name: "", subtitle: "", description: "", bio_p1: "", bio_p2: "", bio_p3: "", cv_url: "", certificate_bubble_url: ""
+    name: "", subtitle: "", description: "", bio_p1: "", bio_p2: "", bio_p3: "", cv_url: "", certificate_bubble_url: "", cv_visible: true, certificate_bubble_visible: true
   });
   const [projects, setProjects] = useState<any[]>(initialProjects || []);
   const [editingProject, setEditingProject] = useState<any | null>(null);
   const [experiences, setExperiences] = useState<any[]>(initialExperience || []);
   const [newExp, setNewExp] = useState({ company_name: "", logo_text: "", logo_url: "" });
   const [socials, setSocials] = useState<any[]>(initialSocials || []);
+  const [analytics, setAnalytics] = useState<any>(initialAnalytics);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -276,6 +280,7 @@ export default function AdminDashboardClient({
     { id: "projects", label: "Projetos", icon: Briefcase },
     { id: "experience", label: "Empresas & Logos", icon: Layers },
     { id: "socials", label: "Conexões & Redes", icon: Send },
+    { id: "analytics", label: "Métricas & Visitas", icon: BarChart3 },
   ];
 
   // ---- DB INIT SCREEN ----
@@ -790,6 +795,285 @@ export default function AdminDashboardClient({
               </div>
             )}
 
+            {/* ======== ANALYTICS TAB ======== */}
+            {activeTab === "analytics" && (
+              <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="mb-4">
+                  <h2 className="font-heading text-xl font-semibold text-white tracking-tight">Métricas & Visitas</h2>
+                  <p className="text-xs text-[#718096] mt-1">Acompanhe acessos, downloads e engajamento com o seu portfólio em tempo real.</p>
+                </div>
+
+                {!analytics ? (
+                  <Card className="bg-[#1c2027] border border-white/5 p-8 text-center">
+                    <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-3" />
+                    <p className="text-sm text-white font-medium">Nenhum dado de métricas disponível.</p>
+                    <p className="text-xs text-[#718096] mt-1">Aguarde as primeiras visitas ao seu site para carregar as métricas.</p>
+                  </Card>
+                ) : (
+                  <div className="space-y-6">
+                    {/* KPI Cards Grid */}
+                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+                      <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Total de Visitas</span>
+                        <div className="flex items-baseline justify-between mt-2">
+                          <span className="text-2xl font-bold text-white font-heading">{analytics.stats.totalVisits}</span>
+                          <span className="text-[10px] text-[#00adb5] bg-[#00adb5]/5 px-1.5 py-0.5 rounded-full font-medium">Acessos</span>
+                        </div>
+                      </Card>
+
+                      <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Downloads de CV</span>
+                        <div className="flex items-baseline justify-between mt-2">
+                          <span className="text-2xl font-bold text-white font-heading">{analytics.stats.cvClicks}</span>
+                          <span className="text-[10px] text-purple-400 bg-purple-400/5 px-1.5 py-0.5 rounded-full font-medium">Cliques</span>
+                        </div>
+                      </Card>
+
+                      <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Cliques Certificado</span>
+                        <div className="flex items-baseline justify-between mt-2">
+                          <span className="text-2xl font-bold text-white font-heading">{analytics.stats.certClicks}</span>
+                          <span className="text-[10px] text-amber-400 bg-amber-400/5 px-1.5 py-0.5 rounded-full font-medium">Cliques</span>
+                        </div>
+                      </Card>
+
+                      <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
+                        <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Total de Contatos</span>
+                        <div className="flex items-baseline justify-between mt-2">
+                          <span className="text-2xl font-bold text-white font-heading">{analytics.stats.contactClicks}</span>
+                          <span className="text-[10px] text-emerald-400 bg-emerald-400/5 px-1.5 py-0.5 rounded-full font-medium">Cliques</span>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* Clique de Contatos & Fontes de Tráfego */}
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {/* Cliques em Contatos Breakdown */}
+                      <Card className="bg-[#1c2027] border border-white/5 shadow-md">
+                        <CardHeader className="border-b border-white/5 py-4 px-6">
+                          <CardTitle className="text-xs font-semibold text-white">Cliques por Canal de Contato</CardTitle>
+                          <CardDescription className="text-[10px] text-[#718096]">Quais redes ou e-mails os visitantes clicaram mais.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-4">
+                          {analytics.contactBreakdown.length === 0 ? (
+                            <p className="text-xs text-[#718096] italic text-center py-4">Sem cliques registrados ainda.</p>
+                          ) : (
+                            analytics.contactBreakdown.map((item: any, idx: number) => {
+                              const maxVal = Math.max(...analytics.contactBreakdown.map((i: any) => i.count), 1);
+                              const pct = Math.round((item.count / maxVal) * 100);
+                              return (
+                                <div key={idx} className="space-y-1.5">
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-white font-medium">{item.platform}</span>
+                                    <span className="text-[#00adb5] font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">cliques</span></span>
+                                  </div>
+                                  <div className="w-full bg-[#242933] h-2 rounded-full overflow-hidden">
+                                    <div className="bg-[#00adb5] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* Fontes de Tráfego */}
+                      <Card className="bg-[#1c2027] border border-white/5 shadow-md">
+                        <CardHeader className="border-b border-white/5 py-4 px-6">
+                          <CardTitle className="text-xs font-semibold text-white">Fontes de Tráfego (Referrers)</CardTitle>
+                          <CardDescription className="text-[10px] text-[#718096]">De onde os visitantes chegaram no seu site.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-4">
+                          {analytics.trafficSources.length === 0 ? (
+                            <p className="text-xs text-[#718096] italic text-center py-4">Sem fontes registradas.</p>
+                          ) : (
+                            analytics.trafficSources.map((item: any, idx: number) => {
+                              const maxVal = Math.max(...analytics.trafficSources.map((i: any) => i.count), 1);
+                              const pct = Math.round((item.count / maxVal) * 100);
+                              return (
+                                <div key={idx} className="space-y-1.5">
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-white font-medium truncate max-w-[200px]">{item.referrer}</span>
+                                    <span className="text-emerald-400 font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">acessos</span></span>
+                                  </div>
+                                  <div className="w-full bg-[#242933] h-2 rounded-full overflow-hidden">
+                                    <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Geolocation Top Cidades */}
+                    <Card className="bg-[#1c2027] border border-white/5 shadow-md">
+                      <CardHeader className="border-b border-white/5 py-4 px-6">
+                        <CardTitle className="text-xs font-semibold text-white">Principais Cidades dos Visitantes (Via IP)</CardTitle>
+                        <CardDescription className="text-[10px] text-[#718096]">Geolocalização instantânea detectada pela infraestrutura da Vercel.</CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        {analytics.topLocations.length === 0 ? (
+                          <p className="text-xs text-[#718096] italic text-center py-4">Nenhuma geolocalização mapeada.</p>
+                        ) : (
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            {analytics.topLocations.map((item: any, idx: number) => {
+                              const maxVal = Math.max(...analytics.topLocations.map((i: any) => i.count), 1);
+                              const pct = Math.round((item.count / maxVal) * 100);
+                              
+                              let locationLabel = `${item.city}`;
+                              if (item.region && item.region !== "Desconhecido" && item.region !== "Dev") {
+                                locationLabel += `, ${item.region}`;
+                              }
+                              if (item.country && item.country !== "Desconhecido" && item.country !== "Local") {
+                                locationLabel += ` (${item.country})`;
+                              }
+
+                              return (
+                                <div key={idx} className="space-y-1.5 p-3 rounded-lg bg-white/[0.01] border border-white/5">
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-white font-medium truncate max-w-[180px]">{locationLabel}</span>
+                                    <span className="text-[#00adb5] font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">visitas</span></span>
+                                  </div>
+                                  <div className="w-full bg-[#242933] h-1.5 rounded-full overflow-hidden">
+                                    <div className="bg-[#00adb5] h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    {/* Dispositivos e Navegadores */}
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {/* Dispositivos */}
+                      <Card className="bg-[#1c2027] border border-white/5 shadow-md">
+                        <CardHeader className="border-b border-white/5 py-4 px-6">
+                          <CardTitle className="text-xs font-semibold text-white">Dispositivos Utilizados</CardTitle>
+                          <CardDescription className="text-[10px] text-[#718096]">Acessos divididos por Celular ou Desktop.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-4">
+                          {analytics.devicesBreakdown.length === 0 ? (
+                            <p className="text-xs text-[#718096] italic text-center py-4">Sem dados.</p>
+                          ) : (
+                            analytics.devicesBreakdown.map((item: any, idx: number) => {
+                              const maxVal = Math.max(...analytics.devicesBreakdown.map((i: any) => i.count), 1);
+                              const pct = Math.round((item.count / maxVal) * 100);
+                              return (
+                                <div key={idx} className="space-y-1.5">
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-white font-medium">{item.device}</span>
+                                    <span className="text-purple-400 font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">acessos</span></span>
+                                  </div>
+                                  <div className="w-full bg-[#242933] h-2 rounded-full overflow-hidden">
+                                    <div className="bg-purple-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* Navegadores */}
+                      <Card className="bg-[#1c2027] border border-white/5 shadow-md">
+                        <CardHeader className="border-b border-white/5 py-4 px-6">
+                          <CardTitle className="text-xs font-semibold text-white">Navegadores Preferidos</CardTitle>
+                          <CardDescription className="text-[10px] text-[#718096]">Navegadores mais utilizados nos acessos.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6 space-y-4">
+                          {analytics.browsersBreakdown.length === 0 ? (
+                            <p className="text-xs text-[#718096] italic text-center py-4">Sem dados.</p>
+                          ) : (
+                            analytics.browsersBreakdown.map((item: any, idx: number) => {
+                              const maxVal = Math.max(...analytics.browsersBreakdown.map((i: any) => i.count), 1);
+                              const pct = Math.round((item.count / maxVal) * 100);
+                              return (
+                                <div key={idx} className="space-y-1.5">
+                                  <div className="flex items-center justify-between text-xs">
+                                    <span className="text-white font-medium">{item.browser}</span>
+                                    <span className="text-amber-400 font-bold">{item.count} <span className="text-[10px] text-[#718096] font-normal">acessos</span></span>
+                                  </div>
+                                  <div className="w-full bg-[#242933] h-2 rounded-full overflow-hidden">
+                                    <div className="bg-amber-500 h-full rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })
+                          )}
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Tabela de Visitas Recentes */}
+                    <Card className="bg-[#1c2027] border border-white/5 shadow-md">
+                      <CardHeader className="border-b border-white/5 py-4 px-6">
+                        <CardTitle className="text-xs font-semibold text-white">Auditoria de Acessos Recentes (Últimos 15)</CardTitle>
+                        <CardDescription className="text-[10px] text-[#718096]">Logs em tempo real de quem acessou seu portfólio.</CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-0 overflow-x-auto">
+                        <table className="w-full border-collapse text-left text-xs text-white">
+                          <thead>
+                            <tr className="border-b border-white/5 bg-white/[0.01]">
+                              <th className="py-3 px-4 font-semibold text-[#718096]">Horário</th>
+                              <th className="py-3 px-4 font-semibold text-[#718096]">IP</th>
+                              <th className="py-3 px-4 font-semibold text-[#718096]">Localização</th>
+                              <th className="py-3 px-4 font-semibold text-[#718096]">Dispositivo</th>
+                              <th className="py-3 px-4 font-semibold text-[#718096]">Navegador</th>
+                              <th className="py-3 px-4 font-semibold text-[#718096]">Origem</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {analytics.recentVisits.length === 0 ? (
+                              <tr>
+                                <td colSpan={6} className="py-6 text-center text-[#718096] italic">Sem acessos registrados ainda.</td>
+                              </tr>
+                            ) : (
+                              analytics.recentVisits.map((visit: any, index: number) => {
+                                const visitDate = new Date(visit.visited_at).toLocaleString("pt-BR", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  day: "2-digit",
+                                  month: "2-digit",
+                                });
+
+                                let locationLabel = `${visit.city}`;
+                                if (visit.region && visit.region !== "Desconhecido" && visit.region !== "Dev") {
+                                  locationLabel += `, ${visit.region}`;
+                                }
+
+                                return (
+                                  <tr key={index} className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
+                                    <td className="py-3 px-4 font-mono text-[11px] text-[#718096]">{visitDate}</td>
+                                    <td className="py-3 px-4 font-mono text-[11px] text-[#718096]">{visit.ip_address}</td>
+                                    <td className="py-3 px-4 font-medium text-white truncate max-w-[150px]" title={locationLabel}>{locationLabel}</td>
+                                    <td className="py-3 px-4 text-[#718096]">
+                                      <span className={cn(
+                                        "px-1.5 py-0.5 rounded-full text-[9px] font-medium",
+                                        visit.device_type === "Celular" ? "bg-purple-500/10 text-purple-400" : "bg-blue-500/10 text-blue-400"
+                                      )}>
+                                        {visit.device_type}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 px-4 text-[#718096]">{visit.browser}</td>
+                                    <td className="py-3 px-4 text-[#718096] truncate max-w-[120px]" title={visit.referrer}>{visit.referrer}</td>
+                                  </tr>
+                                );
+                              })
+                            )}
+                          </tbody>
+                        </table>
+                      </CardContent>
+                    </Card>
+
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         </main>
       </div>
@@ -813,6 +1097,7 @@ export default function AdminDashboardClient({
                 {tab.id === "projects" && "Projetos"}
                 {tab.id === "experience" && "Marcas"}
                 {tab.id === "socials" && "Redes"}
+                {tab.id === "analytics" && "Métricas"}
               </span>
             </button>
           );
