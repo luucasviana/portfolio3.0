@@ -123,8 +123,15 @@ export async function getAnalyticsData(range: "today" | "yesterday" | "week" | "
         AND (${endStr}::text IS NULL OR clicked_at < ${endStr}::timestamp);
     `;
 
+    const activeVisitsRes = await sql`
+      SELECT COUNT(DISTINCT ip_address)::int as count 
+      FROM visit_logs 
+      WHERE visited_at >= NOW() - INTERVAL '5 minutes';
+    `;
+
     const stats = {
       totalVisits: totalVisitsRes[0]?.count || 0,
+      activeVisits: activeVisitsRes[0]?.count || 0,
       cvClicks: cvClicksRes[0]?.count || 0,
       certClicks: certClicksRes[0]?.count || 0,
       contactClicks: contactClicksRes[0]?.count || 0,

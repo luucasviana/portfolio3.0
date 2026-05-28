@@ -859,7 +859,7 @@ export default function AdminDashboardClient({
                 ) : (
                   <div className="space-y-6">
                     {/* KPI Cards Grid */}
-                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+                    <div className={cn("grid gap-4 grid-cols-2", selectedRange === "today" ? "lg:grid-cols-5" : "lg:grid-cols-4")}>
                       <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
                         <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Total de Visitas</span>
                         <div className="flex items-baseline justify-between mt-2">
@@ -867,6 +867,22 @@ export default function AdminDashboardClient({
                           <span className="text-[10px] text-[#00adb5] bg-[#00adb5]/5 px-1.5 py-0.5 rounded-full font-medium">Acessos</span>
                         </div>
                       </Card>
+
+                      {selectedRange === "today" && (
+                        <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Visitas Ativas</span>
+                            <span className="relative flex h-2 w-2 mr-1">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                          </div>
+                          <div className="flex items-baseline justify-between mt-2">
+                            <span className="text-2xl font-bold text-white font-heading">{analytics.stats.activeVisits}</span>
+                            <span className="text-[10px] text-emerald-400 bg-emerald-400/5 px-1.5 py-0.5 rounded-full font-medium font-mono">5 min</span>
+                          </div>
+                        </Card>
+                      )}
 
                       <Card className="bg-[#1c2027] border border-white/5 p-4 flex flex-col justify-between h-24">
                         <span className="text-[10px] font-semibold text-[#718096] uppercase tracking-wider">Downloads de CV</span>
