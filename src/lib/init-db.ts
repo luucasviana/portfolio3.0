@@ -23,7 +23,9 @@ export async function initializeDatabase() {
         bio_p2 TEXT NOT NULL,
         bio_p3 TEXT NOT NULL,
         cv_url VARCHAR(255) DEFAULT '',
-        certificate_bubble_url VARCHAR(255) DEFAULT ''
+        certificate_bubble_url VARCHAR(255) DEFAULT '',
+        cv_visible BOOLEAN DEFAULT TRUE,
+        certificate_bubble_visible BOOLEAN DEFAULT TRUE
       );
     `;
 

@@ -72,6 +72,8 @@ export async function updateProfile(formData: {
   bio_p3: string;
   cv_url?: string;
   certificate_bubble_url?: string;
+  cv_visible?: boolean;
+  certificate_bubble_visible?: boolean;
 }) {
   const admin = await isAuthenticated();
   if (!admin) throw new Error("Não autorizado.");
@@ -89,7 +91,9 @@ export async function updateProfile(formData: {
       bio_p2 = ${formData.bio_p2},
       bio_p3 = ${formData.bio_p3},
       cv_url = COALESCE(NULLIF(${formData.cv_url || ""}, ''), cv_url),
-      certificate_bubble_url = COALESCE(NULLIF(${formData.certificate_bubble_url || ""}, ''), certificate_bubble_url)
+      certificate_bubble_url = COALESCE(NULLIF(${formData.certificate_bubble_url || ""}, ''), certificate_bubble_url),
+      cv_visible = ${formData.cv_visible !== undefined ? formData.cv_visible : true},
+      certificate_bubble_visible = ${formData.certificate_bubble_visible !== undefined ? formData.certificate_bubble_visible : true}
     WHERE id = 'default';
   `;
 

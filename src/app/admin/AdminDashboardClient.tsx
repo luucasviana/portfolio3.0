@@ -474,6 +474,8 @@ export default function AdminDashboardClient({
                           uploading={uploadingField === "cv"}
                           uploadProgress={uploadProgress}
                           onUpload={(e) => handleFileUpload(e, "cv")}
+                          visible={profile.cv_visible !== false}
+                          onVisibleChange={(v) => setProfile({ ...profile, cv_visible: v })}
                         />
                         <UploadBlock
                           title="Certificado Bubble"
@@ -482,6 +484,8 @@ export default function AdminDashboardClient({
                           uploading={uploadingField === "certificate"}
                           uploadProgress={uploadProgress}
                           onUpload={(e) => handleFileUpload(e, "certificate")}
+                          visible={profile.certificate_bubble_visible !== false}
+                          onVisibleChange={(v) => setProfile({ ...profile, certificate_bubble_visible: v })}
                         />
                       </div>
                     </CardContent>
@@ -828,12 +832,36 @@ interface UploadBlockProps {
   uploading: boolean;
   uploadProgress: number;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  visible: boolean;
+  onVisibleChange: (v: boolean) => void;
 }
 
-function UploadBlock({ title, hasFile, fileUrl, uploading, uploadProgress, onUpload }: UploadBlockProps) {
+function UploadBlock({ 
+  title, 
+  hasFile, 
+  fileUrl, 
+  uploading, 
+  uploadProgress, 
+  onUpload,
+  visible,
+  onVisibleChange
+}: UploadBlockProps) {
   return (
     <div className="space-y-3.5 p-4 bg-white/[0.01] border border-white/5 rounded-xl">
-      <p className="text-xs font-semibold text-white">{title}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-white">{title}</p>
+        {hasFile && (
+          <div className="flex items-center gap-1.5">
+            <Switch
+              id={`vis-${title.replace(/\s+/g, "-")}`}
+              checked={visible}
+              onCheckedChange={onVisibleChange}
+              className="scale-75 data-[state=checked]:bg-[#00adb5]"
+            />
+            <Label htmlFor={`vis-${title.replace(/\s+/g, "-")}`} className="text-[10px] text-[#718096] cursor-pointer">Visível</Label>
+          </div>
+        )}
+      </div>
       
       {hasFile ? (
         <div className="flex items-center justify-between rounded-lg border border-white/5 p-3 text-xs bg-white/[0.01]">
@@ -857,7 +885,7 @@ function UploadBlock({ title, hasFile, fileUrl, uploading, uploadProgress, onUpl
 
       <div className="flex flex-col gap-2">
         <Button variant="outline" size="sm" asChild className="h-9 text-xs border-white/5 bg-[#242933] hover:bg-white/[0.02] hover:text-white cursor-pointer w-full">
-          <label>
+          <label className="w-full h-full flex items-center justify-center cursor-pointer">
             {uploading ? (
               <span className="inline-flex items-center gap-1">
                 <Loader2 className="w-3 h-3 animate-spin shrink-0 text-[#00adb5]" />
