@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 // Hardcoded fallback data in case DB is not reachable or not initialized yet
 const fallbackProfile = {
   name: "Lucas Viana",
-  subtitle: "Desenvolvedor & Designer UI",
+  subtitle: "Desenvolvedor, IA & Designer UI",
   description: "Especializado em unir design intuitivo e desenvolvimento de alto nível para criar sistemas modernos, funcionais e totalmente focados na melhor experiência de usuário.",
   bio_p1: "Sou desenvolvedor e designer UI apaixonado por transformar ideias em produtos digitais que realmente funcionam na prática. Comecei trabalhando com Bubble e, ao longo do tempo, fui unindo cada vez mais desenvolvimento, design e estratégia de produto no mesmo processo.",
   bio_p2: "Hoje, meu foco é criar sistemas modernos, intuitivos e bem estruturados — desde plataformas SaaS e dashboards administrativos até aplicativos completos com integrações e experiências personalizadas.",

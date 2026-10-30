@@ -1,0 +1,1145 @@
+/* ==========================================================================
+   TERMINAL THEME — public portfolio only (scoped to .term)
+   Spec: docs/superpowers/specs/2026-10-29-terminal-redesign-design.md
+   ========================================================================== */
+
+.term {
+    --t-bg: #0a0e13;
+    --t-surface: #0f151c;
+    --t-surface-2: #141c25;
+    --t-border: rgba(0, 229, 229, 0.14);
+    --t-phosphor: #00adb5;
+    --t-glow: #00e5e5;
+    --t-cta: #ffb347;
+    --t-purple: #8b5cf6;
+    --t-ok: #3ddc84;
+    --t-text: #e6edf3;
+    --t-text-2: #9fb0c0;
+    --t-muted: #5c6b7a;
+
+    --t-display: var(--font-vt323), "VT323", monospace;
+    --t-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, monospace;
+    --t-body: var(--font-sans), "Geist", system-ui, sans-serif;
+
+    --t-dock-w: 128px;
+    --t-radius: 4px;
+
+    position: relative;
+    min-height: 100svh;
+    background: var(--t-bg);
+    color: var(--t-text);
+    font-family: var(--t-body);
+    line-height: 1.6;
+    overflow-x: clip;
+}
+
+html:has(.term) body {
+    background: #0a0e13;
+}
+
+.term ::selection {
+    background: rgba(0, 229, 229, 0.25);
+    color: #ffffff;
+}
+
+/* Scrollbar */
+html:has(.term)::-webkit-scrollbar {
+    width: 6px;
+}
+html:has(.term)::-webkit-scrollbar-track {
+    background: #0a0e13;
+}
+html:has(.term)::-webkit-scrollbar-thumb {
+    background: rgba(0, 173, 181, 0.45);
+    border-radius: 2px;
+}
+
+/* CRT scanlines + vignette (decorative overlay) */
+.term::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 900;
+    background:
+        repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.35) 100%);
+}
+
+/* Mouse-follow glow (kept from the previous design, phosphor tint) */
+.term .bg-glow {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(600px circle at 50% 50%, rgba(0, 173, 181, 0.04), transparent 80%);
+    transition: background 0.3s ease;
+}
+
+/* ==========================================================================
+   LAYOUT
+   ========================================================================== */
+.term .app-container {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.term .content-area {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    margin-left: var(--t-dock-w);
+    padding: 0 48px;
+    max-width: 1200px;
+    width: calc(100% - var(--t-dock-w));
+    display: flex;
+    flex-direction: column;
+}
+
+.term .content-section {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px 0;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.term .content-section.in-view,
+.term #home.content-section {
+    opacity: 1;
+    transform: none;
+}
+
+@media (max-width: 1024px) {
+    .term .content-area {
+        padding: 0 32px;
+    }
+}
+
+@media (max-width: 768px) {
+    html:has(.term) {
+        scroll-snap-type: none;
+    }
+
+    .term .content-area {
+        margin-left: 0;
+        width: 100%;
+        padding: 40px 16px 100px;
+    }
+
+    .term .content-section {
+        min-height: auto;
+        padding: 60px 0;
+        scroll-snap-align: none;
+    }
+}
+
+/* ==========================================================================
+   REDUCED MOTION (OS preference or the dock toggle → html[data-motion="reduced"])
+   ========================================================================== */
+:root[data-motion="reduced"] .term *,
+:root[data-motion="reduced"] .term *::before,
+:root[data-motion="reduced"] .term *::after {
+    animation: none !important;
+    transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .term *,
+    .term *::before,
+    .term *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ==========================================================================
+   SHARED ATOMS
+   ========================================================================== */
+@keyframes t-blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.term .t-blink {
+    animation: t-blink 1s steps(1) infinite;
+}
+
+.term a:focus-visible,
+.term button:focus-visible {
+    outline: 1px solid var(--t-glow);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   DOCK (left on desktop, bottom bar on phones)
+   ========================================================================== */
+.term .t-dock {
+    position: fixed;
+    left: 24px;
+    top: 24px;
+    bottom: 24px;
+    width: 72px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0;
+    background: rgba(15, 21, 28, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--t-border);
+    border-radius: var(--t-radius);
+}
+
+.term .t-dock__logo {
+    font-family: var(--t-display);
+    font-size: 30px;
+    line-height: 1;
+    color: var(--t-text);
+    text-decoration: none;
+}
+.term .t-dock__logo .t-blink {
+    color: var(--t-phosphor);
+}
+
+.term .t-dock__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.term .t-dock__item {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    color: var(--t-muted);
+    font-size: 17px;
+    text-decoration: none;
+    border-radius: var(--t-radius);
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.term .t-dock__item::before {
+    content: "";
+    position: absolute;
+    left: -12px;
+    top: 12px;
+    bottom: 12px;
+    width: 2px;
+    background: var(--t-phosphor);
+    box-shadow: 0 0 8px var(--t-glow);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.term .t-dock__item:hover {
+    color: var(--t-text);
+    background: rgba(0, 173, 181, 0.08);
+}
+
+.term .t-dock__item.active {
+    color: var(--t-phosphor);
+    background: rgba(0, 173, 181, 0.1);
+}
+.term .t-dock__item.active::before {
+    opacity: 1;
+}
+
+.term .t-dock__tip {
+    position: absolute;
+    left: calc(100% + 18px);
+    top: 50%;
+    transform: translate(-4px, -50%);
+    padding: 6px 10px;
+    white-space: nowrap;
+    font-family: var(--t-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--t-glow);
+    background: var(--t-surface-2);
+    border: 1px solid var(--t-border);
+    border-radius: var(--t-radius);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.term .t-dock__item:hover .t-dock__tip,
+.term .t-dock__item:focus-visible .t-dock__tip {
+    opacity: 1;
+    transform: translate(0, -50%);
+}
+
+.term .t-dock__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.term .t-dock__motion,
+.term .t-dock__social {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    color: var(--t-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--t-radius);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.term .t-dock__motion:hover,
+.term .t-dock__social:hover {
+    color: var(--t-text);
+}
+
+.term .t-dock__motion[aria-pressed="true"] {
+    color: var(--t-cta);
+    border-color: rgba(255, 179, 71, 0.35);
+}
+
+@media (max-width: 768px) {
+    .term .t-dock {
+        left: 16px;
+        right: 16px;
+        top: auto;
+        bottom: 16px;
+        width: auto;
+        height: 64px;
+        flex-direction: row;
+        padding: 0 8px;
+    }
+
+    .term .t-dock__logo,
+    .term .t-dock__tip,
+    .term .t-dock__social {
+        display: none;
+    }
+
+    .term .t-dock__nav {
+        flex: 1;
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 0;
+    }
+
+    .term .t-dock__item {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+
+    .term .t-dock__item::before {
+        left: 12px;
+        right: 12px;
+        top: auto;
+        bottom: -9px;
+        width: auto;
+        height: 2px;
+    }
+
+    .term .t-dock__footer {
+        flex-direction: row;
+        border-left: 1px solid var(--t-border);
+        padding-left: 8px;
+    }
+}
+
+/* ==========================================================================
+   HERO SCENE (layered pixel art, 1344×768 frame anchored bottom-right)
+   ========================================================================== */
+.term .t-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100svh;
+    overflow: hidden;
+    container-type: size;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.term .t-scene__frame {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    aspect-ratio: 1344 / 768;
+    height: max(100cqh, calc(100cqw * 768 / 1344));
+    /* wide viewports crop the frame vertically: take up to 28px from the floor, not all from the sky */
+    bottom: calc(-1 * min(28px, (max(100cqh, 100cqw * 768 / 1344) - 100cqh) * 0.4));
+}
+
+.term .t-scene__bg,
+.term .t-scene__chars {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+    transition: transform 0.4s ease-out;
+}
+
+.term .t-scene__bg {
+    transform: scale(1.04) translate(calc(var(--px, 0) * -6px), calc(var(--py, 0) * -4px));
+    animation: t-flicker 6s ease-in-out infinite;
+}
+
+.term .t-scene__chars {
+    transform: translate(calc(var(--px, 0) * -14px), calc(var(--py, 0) * -8px));
+}
+
+.term .t-scene img {
+    position: absolute;
+    image-rendering: pixelated;
+    user-select: none;
+}
+
+.term .t-scene__bg img,
+.term .t-scene__shadows {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.term .t-scene__char {
+    transform-origin: 50% 100%;
+    animation: t-breathe 4s ease-in-out infinite;
+}
+
+.term .t-scene__char--tux {
+    animation-duration: 3s;
+    animation-delay: -1.2s;
+}
+
+.term .t-scene__char--tabby {
+    animation-duration: 3s;
+    animation-delay: -0.4s;
+}
+
+@keyframes t-breathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+@keyframes t-flicker {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.06); }
+}
+
+/* Text-safe shade on the left (was baked into the approved composite) */
+.term .t-scene::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(6, 10, 16, 0.82) 0%, rgba(6, 10, 16, 0.55) 38%, transparent 62%);
+}
+
+/* Fade the scene into the page below */
+.term .t-scene::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 48px; /* short: the cats sit on the floor at the bottom of the frame */
+    z-index: 1;
+    background: linear-gradient(to bottom, transparent, var(--t-bg));
+}
+
+@media (max-width: 1024px) {
+    .term .t-scene::before {
+        background: linear-gradient(90deg, rgba(6, 10, 16, 0.9) 0%, rgba(6, 10, 16, 0.7) 45%, transparent 75%);
+    }
+}
+
+@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
+    .term .t-scene {
+        height: 55svh;
+    }
+
+    .term .t-scene::before {
+        background: none;
+    }
+
+    .term .t-scene::after {
+        height: 16%;
+    }
+
+    .term #home.content-section {
+        padding-top: calc(55svh - 40px);
+    }
+}
+
+/* ==========================================================================
+   PROMPT, TYPING & SECTION HEADER
+   ========================================================================== */
+.term .t-prompt {
+    font-family: var(--t-mono);
+    font-size: 14px;
+    color: var(--t-text-2);
+    margin-bottom: 12px;
+    white-space: nowrap;
+}
+.term .t-prompt__user {
+    color: var(--t-ok);
+}
+.term .t-prompt__path {
+    color: var(--t-purple);
+}
+
+.term .t-typed {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    width: calc(var(--n) * 1ch);
+}
+
+.term .content-section:not(.in-view):not(#home) .t-typed {
+    width: 0;
+}
+
+.term .content-section.in-view .t-typed,
+.term #home .t-typed {
+    animation: t-type calc(var(--n) * 40ms) steps(var(--n)) both;
+}
+
+@keyframes t-type {
+    from { width: 0; }
+}
+
+/* Hold the typing until the boot intro is dismissed, so it is actually seen */
+:root[data-boot="1"] .term .t-typed,
+:root[data-boot="1"] .term #home .t-typed {
+    animation-play-state: paused;
+}
+
+.term .t-cursor {
+    display: inline-block;
+    margin-left: 2px;
+    color: var(--t-glow);
+    animation: t-blink 1s steps(1) infinite;
+}
+
+.term .t-head {
+    margin-bottom: 40px;
+}
+
+.term .t-head__title {
+    font-family: var(--t-display);
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1;
+    color: var(--t-text);
+    text-shadow: 0 0 18px rgba(0, 229, 229, 0.15);
+}
+
+/* ==========================================================================
+   HERO COPY
+   ========================================================================== */
+.term #home.content-section {
+    position: relative;
+    justify-content: center;
+}
+
+.term .t-hero {
+    max-width: min(640px, calc(100vw - 60.16svh - 188px), calc(65.6vw - 188px));
+    container-type: inline-size;
+}
+
+/* keep the blinking cursor glued to a typed name */
+.term .t-hero__name:has(.t-typed) {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px), (max-width: 1024px) and (orientation: portrait) {
+    .term .t-hero {
+        max-width: 640px;
+    }
+
+    .term .t-status {
+        position: static;
+        margin-top: 28px;
+    }
+}
+
+.term .t-hero__name {
+    font-family: var(--t-display);
+    font-weight: 400;
+    /* VT323 1ch = 0.4em; +0.4em leaves room for the cursor, so name + cursor fit the column */
+    font-size: clamp(56px, min(8vw, calc(100cqi / (var(--name-n, 11) * 0.4 + 0.4))), 112px);
+    line-height: 0.95;
+    color: var(--t-text);
+    text-shadow: 0 0 24px rgba(0, 229, 229, 0.25);
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+}
+
+/* drawn block cursor: "▍" is not in VT323 and its fallback glyph is wider than expected */
+.term .t-hero__name::after {
+    content: "";
+    display: inline-block;
+    width: 0.28em;
+    height: 0.7em;
+    margin-left: 0.06em;
+    background: var(--t-glow);
+    box-shadow: 0 0 12px rgba(0, 229, 229, 0.5);
+    animation: t-blink 1s steps(1) infinite;
+}
+
+.term .t-hero__subtitle {
+    font-family: var(--t-mono);
+    font-weight: 500;
+    font-size: clamp(16px, 1.6vw, 20px);
+    color: var(--t-text-2);
+    margin-bottom: 20px;
+}
+.term .t-hero__subtitle span {
+    color: var(--t-cta);
+}
+
+.term .t-hero__desc {
+    font-size: 16px;
+    color: var(--t-text-2);
+    max-width: 520px;
+    margin-bottom: 32px;
+}
+
+.term .t-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Buttons */
+.term .t-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 20px;
+    font-family: var(--t-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: var(--t-radius);
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.term .t-btn--cta {
+    background: var(--t-cta);
+    color: #1a1206;
+}
+.term .t-btn--cta:hover {
+    box-shadow: 0 0 0 1px var(--t-cta), 0 0 24px -4px rgba(255, 179, 71, 0.6);
+}
+
+.term .t-btn--ghost {
+    background: rgba(10, 14, 19, 0.6);
+    color: var(--t-text);
+    border-color: var(--t-phosphor);
+}
+.term .t-btn--ghost:hover {
+    color: var(--t-glow);
+    background: rgba(0, 173, 181, 0.12);
+    box-shadow: 0 0 20px -6px var(--t-glow);
+}
+
+/* tmux-like status bar */
+.term .t-status {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: var(--t-mono);
+    font-size: 12px;
+    color: var(--t-text-2);
+    background: rgba(15, 21, 28, 0.85);
+    border: 1px solid var(--t-border);
+    border-radius: var(--t-radius);
+}
+
+.term .t-status__seg {
+    padding: 6px 12px;
+    border-right: 1px solid var(--t-border);
+    white-space: nowrap;
+}
+.term .t-status__seg:first-child {
+    color: #0a0e13;
+    background: var(--t-phosphor);
+    font-weight: 700;
+}
+.term .t-status__clock {
+    margin-left: auto;
+    border-right: 0;
+    border-left: 1px solid var(--t-border);
+}
+.term .t-status__dot {
+    color: var(--t-ok);
+}
+
+@media (max-width: 768px) {
+    .term .t-hero__name .t-typed {
+        width: auto;
+        white-space: normal;
+        animation: t-fade 0.4s ease-out both;
+    }
+
+    .term .t-hero__actions .t-btn {
+        flex: 1 1 100%;
+    }
+
+    .term .t-status {
+        position: static;
+        margin-top: 28px;
+    }
+
+    .term .t-status__seg--host {
+        display: none;
+    }
+
+    .term .t-status__seg:nth-child(3) {
+        color: inherit;
+        background: none;
+        font-weight: 400;
+    }
+}
+
+@keyframes t-fade {
+    from { opacity: 0; }
+}
+
+/* ==========================================================================
+   TERMINAL WINDOW CARD
+   ========================================================================== */
+.term .t-win {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--t-surface);
+    border: 1px solid var(--t-border);
+    border-radius: var(--t-radius);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.term .t-win:hover,
+.term .t-win:focus-within {
+    border-color: var(--win-accent);
+    box-shadow: 0 0 0 1px var(--win-accent), 0 0 24px -8px var(--win-accent);
+}
+
+.term .t-win__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 32px;
+    padding: 0 12px;
+    background: var(--t-surface-2);
+    border-bottom: 1px solid var(--t-border);
+    font-family: var(--t-mono);
+    font-size: 12px;
+    color: var(--t-muted);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.term .t-win__dots {
+    letter-spacing: 3px;
+    font-size: 9px;
+    color: var(--win-accent);
+    opacity: 0.8;
+}
+
+.term .t-win__path {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.term .t-win__body {
+    flex: 1;
+    padding: 24px;
+}
+
+/* ==========================================================================
+   SOBRE — whoami
+   ========================================================================== */
+.term .t-about {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.term .t-about__bio p {
+    font-size: 16px;
+    color: var(--t-text-2);
+    margin-bottom: 16px;
+}
+.term .t-about__bio p:last-child {
+    margin-bottom: 0;
+}
+
+.term .t-log__title {
+    display: block;
+    font-family: var(--t-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--t-muted);
+    margin-bottom: 12px;
+}
+
+.term .t-log__viewport {
+    height: 220px;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+
+.term .t-log__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    animation: t-scroll-y 20s linear infinite;
+}
+
+.term .t-log__track li {
+    font-family: var(--t-mono);
+    font-size: 16px;
+    line-height: 44px;
+    color: var(--t-text);
+}
+
+.term .t-log__caret {
+    color: var(--t-phosphor);
+}
+
+@keyframes t-scroll-y {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+}
+
+/* ==========================================================================
+   COMPETÊNCIAS — ls skills/
+   ========================================================================== */
+.term .t-skills {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.term .t-skills__title {
+    font-family: var(--t-mono);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--win-accent);
+    margin-bottom: 14px;
+}
+.term .t-skills__title i {
+    margin-right: 6px;
+}
+
+.term .t-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--t-mono);
+    font-size: 14px;
+    color: var(--t-text-2);
+}
+.term .t-tree li {
+    line-height: 1.9;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 1024px) {
+    .term .t-about {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .term .t-skills {
+        grid-template-columns: 1fr;
+    }
+
+    .term .t-win__body {
+        padding: 18px;
+    }
+}
+
+/* ==========================================================================
+   PROJETOS — ls projetos/
+   ========================================================================== */
+.term .t-projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.term .t-project:hover {
+    transform: translateY(-2px);
+}
+
+.term .t-project .t-win__body {
+    display: flex;
+    flex-direction: column;
+}
+
+.term .t-project__category {
+    font-family: var(--t-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--t-phosphor);
+    margin-bottom: 8px;
+}
+
+.term .t-project__title {
+    font-family: var(--t-display);
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1;
+    color: var(--t-text);
+    margin-bottom: 12px;
+}
+
+.term .t-project__desc {
+    font-size: 15px;
+    color: var(--t-text-2);
+    margin-bottom: 16px;
+}
+
+.term .t-project__tags {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    font-family: var(--t-mono);
+    font-size: 12px;
+    color: var(--t-muted);
+}
+
+.term .t-project__actions {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.term .t-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-family: var(--t-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--t-text-2);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.term .t-link:hover {
+    color: var(--t-text);
+}
+.term .t-link--primary {
+    color: var(--t-phosphor);
+}
+.term .t-link--primary:hover {
+    color: var(--t-glow);
+    text-shadow: 0 0 12px rgba(0, 229, 229, 0.45);
+}
+
+/* ==========================================================================
+   CONTATO — ./contato.sh
+   ========================================================================== */
+.term .t-contact-intro {
+    max-width: 640px;
+    font-size: 16px;
+    color: var(--t-text-2);
+    margin-bottom: 32px;
+}
+
+.term .t-contacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.term .t-contact {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 56px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--t-text);
+    background: var(--t-surface);
+    border: 1px solid var(--t-border);
+    border-radius: var(--t-radius);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.term .t-contact__icon {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+    color: var(--t-text-2);
+    border: 1px solid var(--t-border);
+    border-radius: var(--t-radius);
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.term .t-contact__details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.term .t-contact__title {
+    font-family: var(--t-mono);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.term .t-contact__subtitle {
+    font-size: 13px;
+    color: var(--t-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.term .t-contact__arrow {
+    margin-left: auto;
+    font-family: var(--t-mono);
+    color: var(--t-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.term .t-contact:hover,
+.term .t-contact:focus-visible {
+    border-color: var(--brand-color);
+    box-shadow: 0 0 20px -8px var(--brand-color);
+}
+.term .t-contact:hover .t-contact__icon,
+.term .t-contact:focus-visible .t-contact__icon {
+    color: var(--brand-color);
+    border-color: var(--brand-color);
+}
+.term .t-contact:hover .t-contact__arrow,
+.term .t-contact:focus-visible .t-contact__arrow {
+    color: var(--t-text);
+    transform: translateX(3px);
+}
+
+.term .t-footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--t-border);
+    font-family: var(--t-mono);
+    font-size: 12px;
+    color: var(--t-muted);
+}
+
+@media (max-width: 480px) {
+    .term .t-projects,
+    .term .t-contacts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ==========================================================================
+   BOOT INTRO (visible only while html[data-boot="1"])
+   ========================================================================== */
+.term .t-boot {
+    display: none;
+}
+
+:root[data-boot="1"] .term .t-boot {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #000;
+    font-family: var(--t-mono);
+    font-size: 14px;
+    color: var(--t-text-2);
+}
+
+:root[data-boot="1"] body:has(.term) {
+    overflow: hidden;
+}
+
+.term .t-boot__log {
+    width: min(520px, 100%);
+}
+
+.term .t-boot__line {
+    margin: 0 0 8px;
+    opacity: 0;
+    animation: t-boot-line 0.15s steps(2) both;
+}
+
+.term .t-boot__ok {
+    color: var(--t-ok);
+}
+
+.term .t-boot__hint {
+    margin-top: 20px;
+    color: var(--t-muted);
+    font-size: 12px;
+}
+
+.term .t-boot__crt {
+    position: absolute;
+    inset: 0;
+    background: var(--t-bg);
+    box-shadow: inset 0 0 120px rgba(0, 229, 229, 0.25);
+    transform: scaleY(0.005);
+    opacity: 0;
+    animation: t-crt-on 0.3s ease-out 2.1s both;
+}
+
+@keyframes t-boot-line {
+    to { opacity: 1; }
+}
+
+@keyframes t-crt-on {
+    0% { opacity: 1; transform: scaleY(0.005); filter: brightness(3); }
+    60% { opacity: 1; transform: scaleY(1); filter: brightness(1.6); }
+    100% { opacity: 1; transform: scaleY(1); filter: brightness(1); }
+}
