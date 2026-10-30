@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Geist, VT323, JetBrains_Mono } from "next/font/google";
+import { Geist, VT323, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { PREBOOT_SCRIPT } from "./_portfolio/motion";
@@ -10,12 +10,6 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 // Terminal theme fonts for the public portfolio (exposed as CSS variables only)
 const vt323 = VT323({ weight: "400", subsets: ["latin"], variable: "--font-vt323" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jbmono" });
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-family", // maps directly to our CSS variable
-});
 
 export const metadata: Metadata = {
   title: "Lucas Viana | Desenvolvedor & Designer UI",
@@ -31,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br" suppressHydrationWarning className={cn(plusJakartaSans.variable, "font-sans", geist.variable, vt323.variable, jetbrainsMono.variable)}>
+    <html lang="pt-br" suppressHydrationWarning className={cn("font-sans", geist.variable, vt323.variable, jetbrainsMono.variable)}>
       <head>
         {/* Portfolio: sets html[data-motion] / html[data-boot] before first paint */}
         <InlineScript id="lv-preboot" html={PREBOOT_SCRIPT} />
